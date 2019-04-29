@@ -51,19 +51,6 @@
         <script src="inc/uikit/js/components/datepicker.min.js"></script>
         <script src="inc/uikit/js/components/tooltip.min.js"></script>
         
-        <!-- D3.js Libraries and CSS -->
-        <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/d3/3.2.2/d3.v3.min.js"></script>
-
-        <!-- UV Charts -->
-        <script type="text/javascript" src=inc/uvcharts/uvcharts.full.min.js></script>
-        
-        <!-- Altmetric Script -->
-        <script type='text/javascript' src='https://d1bxh8uas1mnw7.cloudfront.net/assets/embed.js'></script>
-        
-        <!-- PlumX Script -->
-        <script type="text/javascript" src="//d39af2mgp1pqhg.cloudfront.net/widget-popup.js"></script>
-
-        
     </head>
     <body>
         <!-- < ?php include_once("inc/analyticstracking.php") ?> -->
