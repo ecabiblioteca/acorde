@@ -23,6 +23,7 @@ git submodule update
 #Developers 
 
 Tiago Rodrigo Marçal Murakami
+
 Jan Leduc de Lara
 
 #Credits
