@@ -53,7 +53,12 @@
         
     </head>
     <body>
-        <!-- < ?php include_once("inc/analyticstracking.php") ?> -->
+
+        <?php
+        if (file_exists("inc/analyticstracking.php")) {
+            include_once "inc/analyticstracking.php";
+        }
+        ?>
         <div class="uk-margin-bottom">
             <?php include('inc/navbar.php'); ?>        
         </div>
