@@ -7,99 +7,6 @@ include('uspfind_core/uspfind_core.php');
  */
 class paginaInicial {
     
-    static function contar_registros () {
-        global $type;
-        $query_all = '
-            {
-                "query": {
-                    "match_all": {}
-                }
-            }        
-        ';
-        $response = elasticsearch::elastic_search($type,null,0,$query_all);
-        return $response['hits']['total'];
-        print_r($response);
-
-    }
-    
-    static function contar_arquivos () {
-        $query_all = '
-            {
-                "query": {
-                    "match_all": {}
-                }
-            }        
-        ';
-        $response = elasticsearch::elastic_search("files",null,0,$query_all);
-        return $response['hits']['total'];
-        print_r($response);
-
-    } 
-
-    static function contar_unicos ($field) {
-        global $type;
-        $count_distinct_query = '
-        {
-            "aggs" : {
-                "distinct_authors" : {
-                    "cardinality" : {
-                      "field" : "'.$field.'.keyword"
-                    }
-                }
-            }
-        }
-        ';
-        $response = elasticsearch::elastic_search($type,null,0,$count_distinct_query);
-        return $response["aggregations"]["distinct_authors"]["value"];
-
-    }
-
-    
-    static function unidadeUSP_inicio() {
-        global $type;
-        $query = '{
-            "aggs": {
-                "group_by_state": {
-                    "terms": {
-                        "field": "unidadeUSPtrabalhos.keyword",
-                        "order" : { "_term" : "asc" },
-                        "size" : 150
-                    }
-                }
-            }
-        }';
-
-        $response = elasticsearch::elastic_search($type,null,0,$query);
-
-        $programas = [];
-        $count = 1;
-        $programas_pos = array('BIOENG', 'BIOENGENHARIA', 'BIOINFORM', 'BIOINFORMÁTICA', 'BIOTECNOL','BIOTECNOLOGIA','ECOAGROEC','ECOLOGIA APLICA','ECOLOGIA APLICADA','EE/EERP','EESC/IQSC/FMRP','ENERGIA','ENFERM','ENFERMA','ENG DE MATERIAI','ENG DE MATERIAIS','ENGMAT','ENSCIENC','ENSINO CIÊNCIAS','EP/FEA/IEE/IF','ESTHISART','INTER - ENFERMA','IPEN','MAE/MAC/MP/MZ','MODMATFIN','MUSEOLOGIA','NUTHUMANA','NUTRIÇÃO HUMANA','PROCAM','PROLAM','ESTÉTICA HIST.','FCF/FEA/FSP','IB/ICB','HRACF','LASERODON','EP/IB/ICB/IQ/BUTANT /IPT','FO/EE/FSP');
-        foreach ($response["aggregations"]["group_by_state"]["buckets"] as $facets) {        
-            if (in_array($facets['key'],$programas_pos)) {        
-              $programas[] =  '<li><a href="result.php?search[]=unidadeUSPtrabalhos:&quot;'.strtoupper($facets['key']).'&quot;">'.strtoupper($facets['key']).' ('.number_format($facets['doc_count'],0,',','.').')</a></li>';
-            } else { 
-                echo '<li><a href="result.php?search[]=unidadeUSPtrabalhos:&quot;'.strtoupper($facets['key']).'&quot;">'.strtoupper($facets['key']).' ('.number_format($facets['doc_count'],0,',','.').')</a></li>';
-            }
-
-           if ($count == 12)
-                {  
-                     echo '<div id="unidades" class="uk-list uk-list-striped" hidden>';
-                }
-            $count++;
-        }
-
-        if (!empty($programas)) {
-            echo '<li><b>Programas de Pós-Graduação Interunidades</b></li>';
-            echo implode("",$programas);
-        }
-
-        if ($count > 7) {
-            echo '</div>';
-            echo '<button uk-toggle="target: #unidades">Ver todas as unidades</button>';
-        }
-
-    }
-    
     static function facet_inicio($field) 
     {
         global $type;
@@ -113,14 +20,15 @@ class paginaInicial {
                 }
             }
         }';
-        $response = elasticsearch::elastic_search($type, null, 0, $query);
+        $response = Elasticsearch::search(null, 0, $query);
         foreach ($response["aggregations"]["group_by_state"]["buckets"] as $facets) {
             echo '<li><a href="result.php?filter[]='.$field.':&quot;'.$facets['key'].'&quot;">'.$facets['key'].' ('.number_format($facets['doc_count'], 0, ',', '.').')</a></li>';
         }   
 
     }    
     
-    static function ultimos_registros() {
+    static function ultimos_registros() 
+    {
         global $type;
         $query = '{
                     "query": {
@@ -130,7 +38,7 @@ class paginaInicial {
                         {"_uid" : {"order" : "desc"}}
                         ]
                     }';
-        $response = elasticsearch::elastic_search($type,null,11,$query);
+        $response = Elasticsearch::search(null, 11, $query);
 
         foreach ($response["hits"]["hits"] as $r){
             echo '<article class="uk-comment">
@@ -146,72 +54,25 @@ class paginaInicial {
 
             };
             echo '<div class="uk-width-expand">';
-            if (!empty($r["_source"]['name'])){
+            if (!empty($r["_source"]['name'])) {
                 echo '<a href="http://dedalus.usp.br/F/?func=direct&doc_number='.$r['_id'].'" target="_blank"><h4 class="uk-comment-title uk-margin-remove">'.$r["_source"]['name'].'';
-                if (!empty($r["_source"]['datePublished'])){
-                   echo ' ('.$r["_source"]['datePublished'].')';
+                if (!empty($r["_source"]['datePublished'])) {
+                    echo ' ('.$r["_source"]['datePublished'].')';
                 }         
                 echo '</h4></a>';
             };
             echo '<ul class="uk-comment-meta uk-subnav uk-subnav-divider uk-margin-small">';
             if (!empty($r["_source"]['author'])) { 
-            foreach ($r["_source"]['author'] as $autores) {
-            echo '<li><a href="result.php?search[]=authors.keyword:&quot;'.$autores["person"]["name"].'&quot;">'.$autores["person"]["name"].'</a></li>';
-            }
-            echo '</ul></div>';     
+                foreach ($r["_source"]['author'] as $autores) {
+                    echo '<li><a href="result.php?search[]=authors.keyword:&quot;'.$autores["person"]["name"].'&quot;">'.$autores["person"]["name"].'</a></li>';
+                }
+                echo '</ul></div>';     
             };
             echo '</header>';
             echo '</article>';
         }
-
     }
-    
-    static function card_unidade ($sigla,$nome_unidade) {
-        $card = '
-        <div class="uk-text-center">
-            <a href="result.php?search[]=unidadeUSPtrabalhos:'.$sigla.'">
-            <div class="uk-inline-clip uk-transition-toggle">
-                <img src="inc/images/fotosusp/'.$sigla.'.jpg" alt="">
-                <div class="uk-transition-fade uk-position-cover uk-position-small uk-overlay uk-overlay-default uk-flex uk-flex-center uk-flex-middle">
-                    <p class="uk-h6 uk-margin-remove">'.$nome_unidade.'</p>
-                </div>
-            </div>
-            <p class="uk-margin-small-top">'.$sigla.'</p>
-            </a>
-        </div>
-        ';
-        return $card;
-    }    
-    
 }
-
-function counter ($_id,$client) {
-    $query = 
-    '
-    {
-        "script" : {
-            "inline": "ctx._source.counter += params.count",
-            "lang": "painless",
-            "params" : {
-                "count" : 1
-            }
-        },
-        "upsert" : {
-            "counter" : 1
-        }
-    }
-    ';  
-    
-    $params = [
-        'index' => 'sibi',
-        'type' => 'producao_metrics',
-        'id' => $_id,
-        'body' => $query
-    ];
-    $response = $client->update($params);        
-    //print_r($response);
-}
-
 
 /* Recupera os exemplares do DEDALUS */
 function load_itens_single ($sysno) {
