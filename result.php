@@ -6,7 +6,7 @@
 
     $url =  "//{$_SERVER['HTTP_HOST']}{$_SERVER['REQUEST_URI']}";
 
-    $result_get = get::analisa_get($_GET);
+    $result_get = Requests::getParser($_GET);
     $query = $result_get['query'];  
     $limit = $result_get['limit'];
     $page = $result_get['page'];
