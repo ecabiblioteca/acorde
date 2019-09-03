@@ -283,6 +283,9 @@
                                         <?php if (!empty($r["_source"]['alternateName'])) : ?>
                                         <p class="uk-margin-remove">Título original: <?php echo $r["_source"]['alternateName'];?></a></p>
                                         <?php endif; ?>
+                                        <?php if (!empty($r["_source"]['nameOfpart'])) : ?>
+                                        <p class="uk-margin-remove">Título específico: <?php echo implode(" ", $r["_source"]['nameOfpart']);?></a></p>
+                                        <?php endif; ?>					
 
                                         <?php if (!empty($r["_source"]['author'])) : ?>
                                             <p class="uk-article-meta uk-margin-remove"> 
