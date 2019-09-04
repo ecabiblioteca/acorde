@@ -5,6 +5,8 @@
 
 Run: 
 
+sudo apt-get install php-imagick
+
 mkdir upload
 
 chown -R www-data:www-data upload

@@ -28,17 +28,6 @@
     $cursor = $client->search($params);
     $total = $cursor["hits"]["total"];
 
-    /* Citeproc-PHP*/
-
-    include 'inc/citeproc-php/CiteProc.php';
-    $csl_abnt = file_get_contents('inc/citeproc-php/style/abnt.csl');
-    $csl_apa = file_get_contents('inc/citeproc-php/style/apa.csl');
-    $csl_nlm = file_get_contents('inc/citeproc-php/style/nlm.csl');
-    $csl_vancouver = file_get_contents('inc/citeproc-php/style/vancouver.csl');
-    $lang = "br";
-    $citeproc_abnt = new citeproc($csl_abnt,$lang);
-    $mode = "reference";
-
 ?>
 <html>
     <head>
@@ -65,8 +54,8 @@
         <br/><br/><br/>
         <div class="uk-container">
             <div class="uk-grid-divider" uk-grid>
-	    
-	    <div class="uk-width-1-1@s uk-width-1-1@m">
+   
+        <div class="uk-width-1-1@s uk-width-1-1@m">
 	    
 	    
 		<nav class="uk-navbar-container uk-margin" uk-navbar>
@@ -77,24 +66,22 @@
  
 		    </div>
 
-		    <div class="nav-overlay uk-navbar-right">
+            <div class="nav-overlay uk-navbar-right">
+                <a class="uk-navbar-toggle" uk-search-icon uk-toggle="target: .nav-overlay; animation: uk-animation-fade" href="#"></a>
+            </div>
 
-			<a class="uk-navbar-toggle" uk-search-icon uk-toggle="target: .nav-overlay; animation: uk-animation-fade" href="#"></a>
+            <div class="nav-overlay uk-navbar-left uk-flex-1" hidden>
 
-		    </div>
-
-		    <div class="nav-overlay uk-navbar-left uk-flex-1" hidden>
-
-			<div class="uk-navbar-item uk-width-expand">
-			    <form class="uk-search uk-search-navbar uk-width-1-1">
-				<input type="hidden" name="fields[]" value="name">
-				<input type="hidden" name="fields[]" value="author.person.name">
-				<input type="hidden" name="fields[]" value="authorUSP.name">
-				<input type="hidden" name="fields[]" value="about">
-				<input type="hidden" name="fields[]" value="description"> 	    
-				<input class="uk-search-input" type="search" name="search[]" placeholder="Nova pesquisa..." autofocus>
-			    </form>
-			</div>
+            <div class="uk-navbar-item uk-width-expand">
+                <form class="uk-search uk-search-navbar uk-width-1-1">
+                    <input type="hidden" name="fields[]" value="name">
+                    <input type="hidden" name="fields[]" value="author.person.name">
+                    <input type="hidden" name="fields[]" value="authorUSP.name">
+                    <input type="hidden" name="fields[]" value="about">
+                    <input type="hidden" name="fields[]" value="description"> 	    
+                    <input class="uk-search-input" type="search" name="search[]" placeholder="Nova pesquisa..." autofocus>
+                </form>
+            </div>
 
 			<a class="uk-navbar-toggle" uk-close uk-toggle="target: .nav-overlay; animation: uk-animation-fade" href="#"></a>
 
@@ -168,16 +155,16 @@
                                 $facets->query = $query;
                             
                                 if (!isset($_GET["search"])) {
-                                    $_GET["search"] = null;                                    
+                                    $_GET["search"] = null;      
                                 }
 
-                                $facets->facet("author.person.name",120,"Compositores",null,"_term",$_GET["search"]);
-                                $facets->facet("author.person.USP.autor_funcao",120,"Autor/Função",null,"_term",$_GET["search"]);
-                                $facets->facet("USP.meio_de_expressao",200,"Meio de expressão",null,"_term",$_GET["search"]);                            
-                                $facets->facet("datePublished",120,"Ano de publicação","desc","_term",$_GET["search"]);
-                                $facets->facet("USP.about.genero_e_forma",100,"Gênero e forma",null,"_term",$_GET["search"]);
-                                $facets->facet("about",100,"Assuntos",null,"_term",$_GET["search"]);
-                                $facets->facet("publisher.organization.name",100,"Casa publicadora",null,"_term",$_GET["search"]);
+                                $facets->facet("author.person.name", 120, "Compositores", null, "_term", $_GET["search"]);
+                                $facets->facet("author.person.USP.autor_funcao", 120, "Autor/Função", null, "_term", $_GET["search"]);
+                                $facets->facet("USP.meio_de_expressao", 200, "Meio de expressão", null, "_term", $_GET["search"]);
+                                $facets->facet("datePublished", 120, "Ano de publicação", "desc", "_term", $_GET["search"]);
+                                $facets->facet("USP.about.genero_e_forma", 100, "Gênero e forma", null, "_term", $_GET["search"]);
+                                $facets->facet("about", 100, "Assuntos", null, "_term", $_GET["search"]);
+                                $facets->facet("publisher.organization.name", 100, "Casa publicadora", null, "_term", $_GET["search"]);
                             ?>
                         </ul>
                         <hr>
@@ -204,16 +191,16 @@
                                   <input type="text" id="date" readonly style="border:0; color:#f6931f; font-weight:bold;" name="search[]">
                                 </p>        
                                 <div id="limitar-data" class="uk-margin-bottom"></div>        
-                                <?php if(!empty($_GET["search"])): ?>
+                                <?php if (!empty($_GET["search"])) : ?>
                                     <?php foreach($_GET["search"] as $search_expression): ?>
-                                        <input type="hidden" name="search[]" value="<?php echo str_replace('"','&quot;',$search_expression); ?>">
+                                        <input type="hidden" name="search[]" value="<?php echo str_replace('"', '&quot;', $search_expression); ?>">
                                     <?php endforeach; ?>
                                 <?php endif; ?>
                                 <div class="uk-form-row"><button class="uk-button-primary">Limitar datas</button></div>
                             </fieldset>        
                         </form>
                         <hr>
-                        <?php if(!empty($_SESSION['oauthuserdata'])): ?>
+                        <?php if (!empty($_SESSION['oauthuserdata'])) : ?>
                                 <fieldset>
                                     <legend>Gerar relatório</legend>                  
                                     <div class="uk-form-row"><a href="<?php echo 'http://'.$_SERVER["SERVER_NAME"].'/~bdpi/report.php?'.$_SERVER["QUERY_STRING"].''; ?>" class="uk-button-primary">Gerar relatório</a>
@@ -224,19 +211,6 @@
                 </div>
                 
                 <div class="uk-width-3-4@s uk-width-4-6@m">
-                
-                <!-- Vocabulário controlado - Início -->
-                <?php if(isset($_GET["search"])) : ?>    
-                <?php foreach ($_GET["search"] as $expressao_busca) : ?>    
-                <?php if (preg_match("/\bsubject.keyword\b/i",$expressao_busca,$matches)) : ?>
-                    <div class="uk-alert-primary" uk-alert>
-                       <a class="uk-alert-close" uk-close></a>
-                       <?php $assunto = str_replace("subject.keyword:","",$expressao_busca); USP::consultar_vcusp(str_replace("\"","",$assunto)); ?>
-                    </div>   
-                <?php endif; ?>
-                <?php endforeach; ?>
-                <?php endif; ?>    
-                <!-- Vocabulário controlado - Fim -->
                 
                 <!-- Resultados -->
                     <div class="uk-child-width-expand@s uk-grid-divider" uk-grid>
@@ -251,11 +225,11 @@
                             </ul>    
                         </div>
                         <div>
-                            <p class="uk-text-center"><?php print_r(number_format($total,0,',','.'));?> registros</p>
+                            <p class="uk-text-center"><?php print_r(number_format($total, 0, ',', '.'));?> registros</p>
                         </div>
                         <div>
                             <ul class="uk-pagination">
-                                <?php if ($total/$limit > $page): ?>
+                                <?php if ($total/$limit > $page) : ?>
                                     <?php $get_data["page"] = $page+1 ; ?>
                                     <li class="uk-margin-auto-left"><a href="result.php?<?php echo http_build_query($get_data); ?>">Próxima <span class="uk-margin-small-left" uk-pagination-next></span></a></li>
                                 <?php else :?>
@@ -270,12 +244,36 @@
                         
                     <ul class="uk-list uk-list-divider">   
                     <?php foreach ($cursor["hits"]["hits"] as $r) : ?>
-                        <li>                        
+                        <li>
                             <div class="uk-grid-divider uk-padding-small" uk-grid>
                                 <div class="uk-width-1-5@m">
                                     <p>
                                         <a href="result.php?type[]=<?php echo $r["_source"]['type'];?>"><?php echo ucfirst(strtolower($r["_source"]['type']));?></a>
-                                    </p>                                    
+                                    </p> 
+
+                        <?php
+                        if (isset($r["_source"]["url"])) {
+                            if (file_exists('convert-img/'.$r["_id"].'.jpg')) {
+
+                                echo '<img src="convert-img/'.$r["_id"].'.jpg">';
+
+                            } else {
+
+                                $pdf_file   = $r["_source"]["url"][0];
+                                $save_to    = 'convert-img/'.$r["_id"].'.jpg';    
+                                $img = new imagick($pdf_file);
+                                $img->setResolution(60, 60);    
+                                //set new format
+                                $img->setImageFormat('jpg');    
+                                //save image file
+                                $img->writeImage($save_to);
+                            
+                                echo '<img src="convert-img/'.$r["_id"].'.jpg">';
+                            }
+
+
+                        }
+                        ?>    
                                 </div>
                                 <div class="uk-width-4-5@m">    
                                     <article class="uk-article">
@@ -285,7 +283,7 @@
                                         <?php endif; ?>
                                         <?php if (!empty($r["_source"]['nameOfpart'])) : ?>
                                         <p class="uk-margin-remove">Título específico: <?php echo implode(" ", $r["_source"]['nameOfpart']);?></a></p>
-                                        <?php endif; ?>					
+                                        <?php endif; ?>
 
                                         <?php if (!empty($r["_source"]['author'])) : ?>
                                             <p class="uk-article-meta uk-margin-remove"> 
@@ -307,7 +305,7 @@
                                             print_r($array_aut);
                                             ?>
                                             </p>        
-                                        <?php endif; ?>                                                     
+                                        <?php endif; ?> 
                                         <?php if (!empty($r["_source"]['isPartOf'])) : ?>
                                             <p class="uk-text-small uk-margin-remove">In: <a href="result.php?search[]=isPartOf.name.keyword:&quot;<?php echo $r["_source"]['isPartOf']['name'];?>&quot;"><?php echo $r["_source"]['isPartOf']['name'];?></a>
                                             </p>
@@ -332,7 +330,7 @@
                                                 <?php foreach ($r["_source"]["USP"]['notes'] as $notas) : ?>
                                                     <a href="result.php?search[]=USP.notes.keyword:&quot;<?php echo $notas;?>&quot;"><?php echo $notas;?></a>
                                                 <?php endforeach;?>
-                                            <?php endif; ?>                                                                                         
+                                            <?php endif; ?>   
                                         </p>
                                         <p class="uk-text-small uk-margin-remove">
                                             <?php if (!empty($r["_source"]["USP"]['meio_de_expressao'])) : ?>
@@ -340,13 +338,21 @@
                                                 <?php foreach ($r["_source"]["USP"]['meio_de_expressao'] as $meio_de_expressao) : ?>
                                                     <a href="result.php?search[]=USP.meio_de_expressao.keyword:&quot;<?php echo $meio_de_expressao;?>&quot;"><?php echo $meio_de_expressao;?></a>
                                                 <?php endforeach;?>
-                                            <?php endif; ?>                                            
-                                        </p>                                        
-                                        <?php if (!empty($r["_source"]['fatorimpacto'])) : ?>
-                                        <p class="uk-text-small uk-margin-remove">Fator de impacto da publicação: <?php echo $r["_source"]['fatorimpacto'][0]; ?></p>
+                                            <?php endif; ?> 
+                                        </p>
+
+                                        <?php if (!empty($r["_source"]["datePublished"])) : ?>
+                                            <p class="uk-text-small uk-margin-remove">Ano de publicação: <a href="result.php?search[]=datePublished:&quot;<?php echo $r["_source"]["datePublished"];?>&quot;"><?php echo $r["_source"]["datePublished"];?></a></p>
                                         <?php endif; ?>
+                                        <?php if (!empty($r["_source"]["publisher"]["organization"]["name"])) : ?>
+                                            <p class="uk-text-small uk-margin-remove">Casa publicadora: <a href="result.php?search[]=publisher.organization.name:&quot;<?php echo $r["_source"]["publisher"]["organization"]["name"];?>&quot;"><?php echo $r["_source"]["publisher"]["organization"]["name"];?></a></p>
+                                        <?php endif; ?>
+                                        <?php if (!empty($r["_source"]["publisher"]["organization"]["location"])) : ?>
+                                            <p class="uk-text-small uk-margin-remove">Local: <a href="result.php?search[]=publisher.organization.location:&quot;<?php echo $r["_source"]["publisher"]["organization"]["location"];?>&quot;"><?php echo $r["_source"]["publisher"]["organization"]["location"];?></a></p>
+                                        <?php endif; ?>                                        
+
                                         <!-- Acesso ao texto completo - Começo -->
-                                        <div class="uk-alert-primary uk-margin-remove" uk-alert>
+                                        <div class="uk-alert-default uk-margin-remove" uk-alert>
                                             <p class="uk-text-small uk-margin-remove">Acesso ao documento:</p>
                                                 <?php if (!empty($r["_source"]['url'])||!empty($r["_source"]['doi'])) : ?>
                                                 <p>     
@@ -371,7 +377,7 @@
                                                         echo '<p class="uk-text-small">Download do texto completo</p><div class="uk-grid">';
                                                                 foreach ($full_links as $links) {
                                                                     print_r($links);
-                                                                }                                  
+                                                                }        
                                                         echo '</div><br/>';
                                                     }
 
