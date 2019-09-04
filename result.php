@@ -246,36 +246,7 @@
                     <?php foreach ($cursor["hits"]["hits"] as $r) : ?>
                         <li>
                             <div class="uk-grid-divider uk-padding-small" uk-grid>
-                                <div class="uk-width-1-5@m">
-                                    <p>
-                                        <a href="result.php?type[]=<?php echo $r["_source"]['type'];?>"><?php echo ucfirst(strtolower($r["_source"]['type']));?></a>
-                                    </p> 
-
-                        <?php
-                        if (isset($r["_source"]["url"])) {
-                            if (file_exists('convert-img/'.$r["_id"].'.jpg')) {
-
-                                echo '<img src="convert-img/'.$r["_id"].'.jpg">';
-
-                            } else {
-
-                                $pdf_file   = $r["_source"]["url"][0];
-                                $save_to    = 'convert-img/'.$r["_id"].'.jpg';    
-                                $img = new imagick($pdf_file);
-                                $img->setResolution(60, 60);    
-                                //set new format
-                                $img->setImageFormat('jpg');    
-                                //save image file
-                                $img->writeImage($save_to);
-                            
-                                echo '<img src="convert-img/'.$r["_id"].'.jpg">';
-                            }
-
-
-                        }
-                        ?>    
-                                </div>
-                                <div class="uk-width-4-5@m">    
+                                <div class="uk-width-1-1@m">    
                                     <article class="uk-article">
                                         <p class="uk-text-lead uk-margin-remove"><a class="uk-link-reset" href="http://dedalus.usp.br/F/?func=direct&doc_number=<?php echo  $r['_id'];?>" target="_blank"><?php echo $r["_source"]['name'];?><?php if (!empty($r["_source"]['year'])) { echo ' ('.$r["_source"]['year'].')'; } ?></a></p>
                                         <?php if (!empty($r["_source"]['alternateName'])) : ?>
@@ -341,48 +312,28 @@
                                             <?php endif; ?> 
                                         </p>
 
-                                        <?php if (!empty($r["_source"]["datePublished"])) : ?>
-                                            <p class="uk-text-small uk-margin-remove">Ano de publicação: <a href="result.php?search[]=datePublished:&quot;<?php echo $r["_source"]["datePublished"];?>&quot;"><?php echo $r["_source"]["datePublished"];?></a></p>
-                                        <?php endif; ?>
+
                                         <?php if (!empty($r["_source"]["publisher"]["organization"]["name"])) : ?>
                                             <p class="uk-text-small uk-margin-remove">Casa publicadora: <a href="result.php?search[]=publisher.organization.name:&quot;<?php echo $r["_source"]["publisher"]["organization"]["name"];?>&quot;"><?php echo $r["_source"]["publisher"]["organization"]["name"];?></a></p>
                                         <?php endif; ?>
                                         <?php if (!empty($r["_source"]["publisher"]["organization"]["location"])) : ?>
                                             <p class="uk-text-small uk-margin-remove">Local: <a href="result.php?search[]=publisher.organization.location:&quot;<?php echo $r["_source"]["publisher"]["organization"]["location"];?>&quot;"><?php echo $r["_source"]["publisher"]["organization"]["location"];?></a></p>
-                                        <?php endif; ?>                                        
+                                        <?php endif; ?>
+                                        <?php if (!empty($r["_source"]["datePublished"])) : ?>
+                                            <p class="uk-text-small uk-margin-remove">Ano de publicação: <a href="result.php?search[]=datePublished:&quot;<?php echo $r["_source"]["datePublished"];?>&quot;"><?php echo $r["_source"]["datePublished"];?></a></p>
+                                        <?php endif; ?> 
 
-                                        <!-- Acesso ao texto completo - Começo -->
-                                        <div class="uk-alert-default uk-margin-remove" uk-alert>
-                                            <p class="uk-text-small uk-margin-remove">Acesso ao documento:</p>
-                                                <?php if (!empty($r["_source"]['url'])||!empty($r["_source"]['doi'])) : ?>
-                                                <p>     
-                                                    <?php if (!empty($r["_source"]['url'])) : ?>
-                                                    <?php foreach ($r["_source"]['url'] as $url) : ?>
-                                                    <?php if ($url != '') : ?>
+                                        <?php if (!empty($r["_source"]['url'])) : ?>
+                                            <?php foreach ($r["_source"]['url'] as $url) : ?>
+                                                <?php if ($url != '') : ?>
                                                     <a class="uk-button uk-button-primary uk-button-small uk-margin-remove" href="<?php echo $url;?>" target="_blank">Visualize a primeira página</a>
-                                                    <?php endif; ?>
-                                                    <?php endforeach;?>
-                                                    <?php endif; ?>
-
-                                                </p>
                                                 <?php endif; ?>
-                                                <?php processaResultados::load_itens_new($r['_id']); ?>
-                                            
-                                                <?php 
-                                                    if(empty($_SESSION['oauthuserdata'])){
-                                                        $_SESSION['oauthuserdata']="";
-                                                    } 
-                                                    $full_links = processaResultados::get_fulltext_file($r['_id'],$_SESSION['oauthuserdata']);
-                                                    if (!empty($full_links)){
-                                                        echo '<p class="uk-text-small">Download do texto completo</p><div class="uk-grid">';
-                                                                foreach ($full_links as $links) {
-                                                                    print_r($links);
-                                                                }        
-                                                        echo '</div><br/>';
-                                                    }
-
-                                                ?> 
-                                            
+                                            <?php endforeach;?>
+                                        <?php endif; ?> 
+                                        <br/><br/>
+                                        <!-- Acesso ao texto completo - Começo -->
+                                        <div>
+                                            <?php processaResultados::load_itens_new($r['_id']); ?>
                                         </div>                                       
                                       
                                     </article>
