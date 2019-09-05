@@ -158,13 +158,13 @@
                                     $_GET["search"] = null;      
                                 }
 
-                                $facets->facet("author.person.name", 120, "Compositores", null, "_term", $_GET["search"]);
-                                $facets->facet("author.person.USP.autor_funcao", 120, "Autor/Função", null, "_term", $_GET["search"]);
-                                $facets->facet("USP.meio_de_expressao", 200, "Meio de expressão", null, "_term", $_GET["search"]);
-                                $facets->facet("datePublished", 120, "Ano de publicação", "desc", "_term", $_GET["search"]);
-                                $facets->facet("USP.about.genero_e_forma", 100, "Gênero e forma", null, "_term", $_GET["search"]);
-                                $facets->facet("about", 100, "Assuntos", null, "_term", $_GET["search"]);
-                                $facets->facet("publisher.organization.name", 100, "Casa publicadora", null, "_term", $_GET["search"]);
+                                $facets->facet("author.person.name", 120, "Compositores", null, "_term", $_GET["search"], true);
+                                $facets->facet("author.person.USP.autor_funcao", 120, "Autor/Função", null, "_term", $_GET["search"], true);
+                                $facets->facet("USP.meio_de_expressao", 200, "Meio de expressão", null, "_term", $_GET["search"], true);
+                                $facets->facet("datePublished", 120, "Ano de publicação", "desc", "_term", $_GET["search"], true);
+                                $facets->facet("USP.about.genero_e_forma", 100, "Gênero e forma", null, "_term", $_GET["search"], true);
+                                $facets->facet("about", 100, "Assuntos", null, "_term", $_GET["search"], true);
+                                $facets->facet("publisher.organization.name", 100, "Casa publicadora", null, "_term", $_GET["search"], true);
                             ?>
                         </ul>
                         <hr>
