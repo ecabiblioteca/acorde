@@ -67,16 +67,17 @@ class paginaInicial {
     
     static function ultimos_registros() 
     {
-        global $type;
-        $query = '{
-                    "query": {
-                        "match_all": {}
-                     },
-                    "sort" : [
-                        {"_uid" : {"order" : "desc"}}
-                        ]
-                    }';
-        $response = Elasticsearch::search(null, 11, $query);
+        global $index;
+        $params = [];
+        $params["index"] = $index;
+        $params["size"] = 0;
+        $query["query"]["bool"]["must"]["query_string"]["query"] = "*";
+        $query["sort"]["_uid"]["unmapped_type"] = "long";
+        $query["sort"]["_uid"]["missing"] = "_last";
+        $query["sort"]["_uid"]["order"] = "desc";
+        $query["sort"]["_uid"]["mode"] = "max";         
+        $params["body"] = $query;   
+        $response = Elasticsearch::search(null, 10, $query);
 
         foreach ($response["hits"]["hits"] as $r){
             echo '<article class="uk-comment">

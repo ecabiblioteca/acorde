@@ -6,27 +6,34 @@
 
     $url =  "//{$_SERVER['HTTP_HOST']}{$_SERVER['REQUEST_URI']}";
 
+
+    if (isset($fields)) {
+        $_GET["fields"] = $fields;
+    }
     $result_get = Requests::getParser($_GET);
-    $query = $result_get['query'];  
     $limit = $result_get['limit'];
     $page = $result_get['page'];
-    $skip = $result_get['skip'];
-    
-
-    /*pagination - start*/
-    $get_data = $_GET;    
-    /*pagination - end*/
-    
-
     $params = [];
     $params["index"] = $index;
-    $params["type"] = $type;
+    $params["body"] = $result_get['query'];
+    $cursorTotal = $client->count($params);
+    $total = $cursorTotal["count"];
+    if (isset($_GET["sort"])) {
+        $result_get['query']["sort"][$_GET["sort"]]["unmapped_type"] = "long";
+        $result_get['query']["sort"][$_GET["sort"]]["missing"] = "_last";
+        $result_get['query']["sort"][$_GET["sort"]]["order"] = "desc";
+        $result_get['query']["sort"][$_GET["sort"]]["mode"] = "max";
+    } else {
+        $result_get['query']['sort']['datePublished']['order'] = "desc";
+        $result_get['query']["sort"]["_uid"]["unmapped_type"] = "long";
+        $result_get['query']["sort"]["_uid"]["missing"] = "_last";
+        $result_get['query']["sort"]["_uid"]["order"] = "desc";
+        $result_get['query']["sort"]["_uid"]["mode"] = "max";
+    }
+    $params["body"] = $result_get['query'];
     $params["size"] = $limit;
-    $params["from"] = $skip;
-    $params["body"] = $query;
-
+    $params["from"] = $result_get['skip'];
     $cursor = $client->search($params);
-    $total = $cursor["hits"]["total"];
 
 ?>
 <html>
@@ -152,7 +159,7 @@
                         <ul class="uk-nav-default uk-nav-parent-icon" uk-nav="multiple: true">
                             <?php
                                 $facets = new facets();
-                                $facets->query = $query;
+                                $facets->query = $result_get['query'];
                             
                                 if (!isset($_GET["search"])) {
                                     $_GET["search"] = null;      
@@ -213,31 +220,13 @@
                 <div class="uk-width-3-4@s uk-width-4-6@m">
                 
                 <!-- Resultados -->
-                    <div class="uk-child-width-expand@s uk-grid-divider" uk-grid>
-                        <div>
-                            <ul class="uk-pagination">
-                                <?php if ($page == 1) :?>
-                                    <li><a href="#"><span class="uk-margin-small-right" uk-pagination-previous></span> Anterior</a></li>
-                                <?php else :?>
-                                    <?php $get_data["page"] = $page-1 ; ?>
-                                    <li><a href="result.php?<?php echo http_build_query($get_data); ?>"><span class="uk-margin-small-right" uk-pagination-previous></span> Anterior</a></li>
-                                <?php endif; ?>
-                            </ul>    
-                        </div>
-                        <div>
-                            <p class="uk-text-center"><?php print_r(number_format($total, 0, ',', '.'));?> registros</p>
-                        </div>
-                        <div>
-                            <ul class="uk-pagination">
-                                <?php if ($total/$limit > $page) : ?>
-                                    <?php $get_data["page"] = $page+1 ; ?>
-                                    <li class="uk-margin-auto-left"><a href="result.php?<?php echo http_build_query($get_data); ?>">Próxima <span class="uk-margin-small-left" uk-pagination-next></span></a></li>
-                                <?php else :?>
-                                    <li class="uk-margin-auto-left"><a href="#">Próxima <span class="uk-margin-small-left" uk-pagination-next></span></a></li>
-                                <?php endif; ?>
-                            </ul>                            
-                        </div>
-                    </div>
+                    
+
+                    <!-- PAGINATION -->
+                    <?php UI::pagination($page, $total, $limit, $t); ?>
+                    <!-- /PAGINATION -->
+
+                    
                     
                     <hr class="uk-grid-divider">
                     <div class="uk-width-1-1 uk-margin-top uk-description-list-line">
@@ -346,31 +335,9 @@
                         </ul> 
                         
                     <hr class="uk-grid-divider">
-                    <div class="uk-child-width-expand@s uk-grid-divider" uk-grid>
-                        <div>
-                            <ul class="uk-pagination">
-                                <?php if ($page == 1) :?>
-                                    <li><a href="#"><span class="uk-margin-small-right" uk-pagination-previous></span> Anterior</a></li>
-                                <?php else :?>
-                                    <?php $get_data["page"] = $page-1 ; ?>
-                                    <li><a href="result.php?<?php echo http_build_query($get_data); ?>"><span class="uk-margin-small-right" uk-pagination-previous></span> Anterior</a></li>
-                                <?php endif; ?>
-                            </ul>    
-                        </div>
-                        <div>
-                            <p class="uk-text-center"><?php print_r(number_format($total,0,',','.'));?> registros</p>
-                        </div>
-                        <div>
-                            <ul class="uk-pagination">
-                                <?php if ($total/$limit > $page): ?>
-                                    <?php $get_data["page"] = $page+1 ; ?>
-                                    <li class="uk-margin-auto-left"><a href="result.php?<?php echo http_build_query($get_data); ?>">Próxima <span class="uk-margin-small-left" uk-pagination-next></span></a></li>
-                                <?php else :?>
-                                    <li class="uk-margin-auto-left"><a href="#">Próxima <span class="uk-margin-small-left" uk-pagination-next></span></a></li>
-                                <?php endif; ?>
-                            </ul>                            
-                        </div>
-                    </div>                      
+                    <!-- PAGINATION -->
+                    <?php UI::pagination($page, $total, $limit, $t); ?>
+                    <!-- /PAGINATION -->               
                     
                 </div>
             </div>
