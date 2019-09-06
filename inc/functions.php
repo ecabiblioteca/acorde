@@ -1,6 +1,44 @@
 <?php
 
-include('uspfind_core/uspfind_core.php');
+require 'uspfind_core/uspfind_core.php';
+
+/* Connect to Elasticsearch */
+try {
+    $client = \Elasticsearch\ClientBuilder::create()->setHosts($hosts)->build(); 
+    //print("<pre>".print_r($client,true)."</pre>");
+    $indexParams['index']  = $index;   
+    $testIndex = $client->indices()->exists($indexParams);
+} catch (Exception $e) {    
+    $error_connection_message = '<div class="alert alert-danger" role="alert">Elasticsearch não foi encontrado. Favor executar o arquivo elasticsearch.lnk.</div>';
+}
+
+if (isset($testIndex) && $testIndex == false) {
+    Elasticsearch::createIndex($index, $client);
+
+    $mappingsParams = [
+        'index' => $index,
+        'body' => [
+            'properties' => [
+                'name' => [
+                    'type' => 'text',
+                    'analyzer' => 'portuguese',
+                    'fields' => [
+                        'keyword' => [
+                            'type' => 'keyword',
+                            'ignore_above' => 256
+                        ]
+                    ]
+                ], 
+                'datePublished' => [
+                    'type' => 'integer'
+                ]                                         
+            ]
+        ]
+    ];
+
+    Elasticsearch::mappingsIndex($index, $client, $mappingsParams);
+}
+
 
 /**
  * Classe de funções da página inicial
