@@ -103,7 +103,7 @@ class paginaInicial {
             echo '<ul class="uk-comment-meta uk-subnav uk-subnav-divider uk-margin-small">';
             if (!empty($r["_source"]['author'])) { 
                 foreach ($r["_source"]['author'] as $autores) {
-                    echo '<li><a href="result.php?search[]=authors.keyword:&quot;'.$autores["person"]["name"].'&quot;">'.$autores["person"]["name"].'</a></li>';
+                    echo '<li><a href="result.php?filter[]=author.person.name:&quot;'.$autores["person"]["name"].'&quot;">'.$autores["person"]["name"].'</a></li>';
                 }
                 echo '</ul></div>';     
             };
