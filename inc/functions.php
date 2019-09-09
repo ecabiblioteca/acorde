@@ -2,6 +2,9 @@
 
 require 'uspfind_core/uspfind_core.php';
 
+/* Load libraries for PHP composer */ 
+require (__DIR__.'/../vendor/autoload.php'); 
+
 /* Connect to Elasticsearch */
 try {
     $client = \Elasticsearch\ClientBuilder::create()->setHosts($hosts)->build(); 
@@ -28,7 +31,47 @@ if (isset($testIndex) && $testIndex == false) {
                             'ignore_above' => 256
                         ]
                     ]
+                ],
+                'alternateName' => [
+                    'type' => 'text',
+                    'analyzer' => 'portuguese',
+                    'fields' => [
+                        'keyword' => [
+                            'type' => 'keyword',
+                            'ignore_above' => 256
+                        ]
+                    ]
+                ],
+                'nameOfpart' => [
+                    'type' => 'text',
+                    'analyzer' => 'portuguese',
+                    'fields' => [
+                        'keyword' => [
+                            'type' => 'keyword',
+                            'ignore_above' => 256
+                        ]
+                    ]
+                ],
+                'about' => [
+                    'type' => 'text',
+                    'analyzer' => 'portuguese',
+                    'fields' => [
+                        'keyword' => [
+                            'type' => 'keyword',
+                            'ignore_above' => 256
+                        ]
+                    ]
                 ], 
+                'genero_e_forma' => [
+                    'type' => 'text',
+                    'analyzer' => 'portuguese',
+                    'fields' => [
+                        'keyword' => [
+                            'type' => 'keyword',
+                            'ignore_above' => 256
+                        ]
+                    ]
+                ],                                                       
                 'datePublished' => [
                     'type' => 'integer'
                 ]                                         
@@ -38,6 +81,36 @@ if (isset($testIndex) && $testIndex == false) {
 
     Elasticsearch::mappingsIndex($index, $client, $mappingsParams);
 }
+
+    /* Definição de idioma */
+
+    if (isset($_SERVER['HTTP_ACCEPT_LANGUAGE'])) {
+        if (empty($_SESSION['localeToUse'])) {
+            $_SESSION['localeToUse'] = Locale::acceptFromHttp($_SERVER['HTTP_ACCEPT_LANGUAGE']);
+        }
+    }
+    else {
+        if (empty($_SESSION['localeToUse'])) {
+            $_SESSION['localeToUse'] = Locale::getDefault();
+        }
+    }
+
+    if (!empty($_GET['locale'])) {
+        $_SESSION['localeToUse'] = $_GET["locale"];
+    } 
+    
+    
+    use Gettext\Translator;
+
+    //Create the translator instance
+    $t = new Translator();
+    
+    if ($_SESSION['localeToUse'] == 'pt_BR') {
+        $t->loadTranslations(__DIR__.'/../Locale/pt_BR/LC_MESSAGES/pt_BR.php');
+    } else {
+        $t->loadTranslations(__DIR__.'/../Locale/en_US/LC_MESSAGES/en.php');
+    }
+
 
 
 /**
