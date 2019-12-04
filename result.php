@@ -82,46 +82,82 @@ $get_data = $_GET;
                                 <?php if (!empty($r["_source"]['nameOfpart'])) : ?>
                                     <p class="text-muted"><b>Título específico:</b> <?php echo implode(" ", $r["_source"]['nameOfpart']);?></p>
                                 <?php endif; ?>
-                        
-
-                                <p class="text-muted"><b>Autores:</b>
-                                    <?php if (!empty($r["_source"]['author'])) : ?>
-                                        <?php foreach ($r["_source"]['author'] as $autores) {
-                                            $authors_array[]='<a href="result.php?filter[]=author.person.name:&quot;'.$autores["person"]["name"].'&quot;">'.$autores["person"]["name"].'</a>';
-                                        } 
-                                        $array_aut = implode(", ",$authors_array);
-                                        unset($authors_array);
-                                        print_r($array_aut);
-                                        ?>
-                                    <?php endif; ?>
-                                </p>
-                                
-   
-                                <?php if (!empty($r["_source"]['isPartOf']['name'])) : ?>                                        
-                                    <p class="text-muted"><b>In:</b> <a href="result.php?filter[]=isPartOf.name:&quot;<?php echo $r["_source"]['isPartOf']['name'];?>&quot;"><?php echo $r["_source"]['isPartOf']['name'];?></a></p>
-                                <?php endif; ?>
-                                <?php if (!empty($r["_source"]['isPartOf']['issn'])) : ?>
-                                    <p class="text-muted"><b>ISSN:</b> <a href="result.php?filter[]=isPartOf.issn:&quot;<?php echo $r["_source"]['isPartOf']['issn'];?>&quot;"><?php echo $r["_source"]['isPartOf']['issn'];?></a></li>                                        
-                                <?php endif; ?>
-                                <?php if (!empty($r["_source"]['EducationEvent']['name'])) : ?>
-                                    <p class="text-muted"><b>Nome do evento:</b> <?php echo $r["_source"]['EducationEvent']['name'];?></p>
-                                <?php endif; ?>                                   
-                                
-                                <?php if (!empty($r["_source"]['doi'])) : ?>
-                                    <p class="text-muted"><b>DOI:</b>    <a href="https://doi.org/<?php echo $r["_source"]['doi'];?>"><span id="<?php echo $r['_id'] ?>"><?php echo $r["_source"]['doi'];?></span></a> <button class="btn btn-info" onclick="copyToClipboard('#<?=$r['_id']?>')">Copiar DOI</button> <a class="btn btn-warning" href="doi_to_elastic.php?doi=<?php echo $r['_source']['doi'];?>&tag=<?php echo $r['_source']['tag'][0];?>">Coletar dados da Crossref</a></p>                                        
-                                <?php endif; ?>
-
-                                <?php if (!empty($r["_source"]['url'])) : ?>
-                                    <p class="text-muted"><b>URL:</b> <a href="<?php echo str_replace("]", "", str_replace("[", "", $r["_source"]['url'])); ?>"><?php echo str_replace("]", "", str_replace("[", "", $r["_source"]['url']));?></a></p>
-                                <?php endif; ?>                                                                             
-                                
-                                <?php if (!empty($r["_source"]['ids_match'])) : ?>  
-                                    <?php foreach ($r["_source"]['ids_match'] as $id_match) : ?>
-                                        <?php compararRegistros::match_id($id_match["id_match"], $id_match["nota"]);?>
-                                    <?php endforeach;?>
-                                <?php endif; ?>                                       
 
 
+                                <?php if (!empty($r["_source"]['author'])) : ?>
+                                    <p class="text-muted"> 
+                                    <?php foreach ($r["_source"]['author'] as $authors) {
+                                        if (!empty($authors["person"]["date"])) {
+                                            $author_date = ' - ' . $authors["person"]["date"];
+                                        } else {
+                                            $author_date = "";
+                                        }
+
+                                        if (!empty($authors["person"]["potentialAction"])) {
+                                            $authors_array[]='<a href="result.php?search[]=author.person.name.keyword:&quot;'.$authors["person"]["name"].'&quot;">'.$authors["person"]["name"].$author_date.' ('.$authors["person"]["potentialAction"].')</a>';
+                                        } else {
+                                            $authors_array[]='<a href="result.php?search[]=author.person.name.keyword:&quot;'.$authors["person"]["name"].'&quot;">'.$authors["person"]["name"].$author_date.'</a>';
+                                        }
+                                    } 
+                                    $array_aut = implode("; ",$authors_array);
+                                    unset($authors_array);
+                                    echo '<b>Compositore e autores/funções:</b> '.$array_aut.'';
+                                    ?>
+                                    </p>        
+                                <?php endif; ?> 
+                                        <?php if (!empty($r["_source"]['isPartOf'])) : ?>
+                                            <p class="uk-text-small uk-margin-remove">In: <a href="result.php?search[]=isPartOf.name.keyword:&quot;<?php echo $r["_source"]['isPartOf']['name'];?>&quot;"><?php echo $r["_source"]['isPartOf']['name'];?></a>
+                                            </p>
+                                        <?php endif; ?> 
+                                        <p class="text-muted">
+                                            <?php if (!empty($r["_source"]['about'])) : ?>
+                                                <b>Assuntos:</b>
+                                                <?php foreach ($r["_source"]['about'] as $assunto) : ?>
+                                                    <a href="result.php?search[]=about.keyword:&quot;<?php echo $assunto;?>&quot;"><?php echo $assunto;?></a>
+                                                <?php endforeach;?>
+                                            <?php endif; ?>
+                                            <?php if (!empty($r["_source"]['genero_e_forma'])) : ?>
+                                                <b>Gênero e forma:</b>
+                                                <?php foreach ($r["_source"]['genero_e_forma'] as $genero_e_forma) : ?>
+                                                    <a href="result.php?search[]=genero_e_forma.keyword:&quot;<?php echo $genero_e_forma;?>&quot;"><?php echo $genero_e_forma;?></a>
+                                                <?php endforeach;?>
+                                            <?php endif; ?>
+                                        </p>
+                                         <p class="text-muted">   
+                                            <?php if (!empty($r["_source"]["USP"]['notes'])) : ?>
+                                                <b>Notas:</b>
+                                                <?php foreach ($r["_source"]["USP"]['notes'] as $notas) : ?>
+                                                    <a href="result.php?search[]=USP.notes.keyword:&quot;<?php echo $notas;?>&quot;"><?php echo $notas;?></a>
+                                                <?php endforeach;?>
+                                            <?php endif; ?>   
+                                        </p>
+                                        <p class="text-muted">
+                                            <?php if (!empty($r["_source"]["USP"]['meio_de_expressao'])) : ?>
+                                                <b>Meio de expressão:</b>
+                                                <?php foreach ($r["_source"]["USP"]['meio_de_expressao'] as $meio_de_expressao) : ?>
+                                                    <a href="result.php?search[]=USP.meio_de_expressao.keyword:&quot;<?php echo $meio_de_expressao;?>&quot;"><?php echo $meio_de_expressao;?></a>
+                                                <?php endforeach;?>
+                                            <?php endif; ?> 
+                                        </p>
+
+
+                                        <?php if (!empty($r["_source"]["publisher"]["organization"]["name"])) : ?>
+                                            <p class="text-muted"><b>Casa publicadora:</b> <a href="result.php?search[]=publisher.organization.name:&quot;<?php echo $r["_source"]["publisher"]["organization"]["name"];?>&quot;"><?php echo $r["_source"]["publisher"]["organization"]["name"];?></a></p>
+                                        <?php endif; ?>
+                                        <?php if (!empty($r["_source"]["publisher"]["organization"]["location"])) : ?>
+                                            <p class="text-muted"><b>Local:</b> <a href="result.php?search[]=publisher.organization.location:&quot;<?php echo $r["_source"]["publisher"]["organization"]["location"];?>&quot;"><?php echo $r["_source"]["publisher"]["organization"]["location"];?></a></p>
+                                        <?php endif; ?>
+                                        <?php if (!empty($r["_source"]["datePublished"])) : ?>
+                                            <p class="text-muted"><b>Ano de publicação:</b> <a href="result.php?search[]=datePublished:&quot;<?php echo $r["_source"]["datePublished"];?>&quot;"><?php echo $r["_source"]["datePublished"];?></a></p>
+                                        <?php endif; ?> 
+
+                                        <?php if (!empty($r["_source"]['url'])) : ?>
+                                            <?php foreach ($r["_source"]['url'] as $url) : ?>
+                                                <?php if ($url != '') : ?>
+                                                    <a class="btn btn-primary" href="<?php echo $url;?>" target="_blank">Visualize a primeira página</a>
+                                                <?php endif; ?>
+                                            <?php endforeach;?>
+                                        <?php endif; ?> 
                             </div>
                         </div>
                         <?php endforeach;?>
