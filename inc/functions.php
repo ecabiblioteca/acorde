@@ -73,7 +73,7 @@ if (isset($testIndex) && $testIndex == false) {
                     ]
                 ],                                                       
                 'datePublished' => [
-                    'type' => 'integer'
+                    'type' => 'text'
                 ]                                         
             ]
         ]
