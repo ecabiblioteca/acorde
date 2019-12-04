@@ -101,7 +101,7 @@ $get_data = $_GET;
                                     } 
                                     $array_aut = implode("; ",$authors_array);
                                     unset($authors_array);
-                                    echo '<b>Compositore e autores/funções:</b> '.$array_aut.'';
+                                    echo '<b>Compositores e autores/funções:</b> '.$array_aut.'';
                                     ?>
                                     </p>        
                                 <?php endif; ?> 
@@ -171,7 +171,7 @@ $get_data = $_GET;
                 <div class="col-4">
                 
                 <hr>
-                <h3>Refinar meus resultados</h3>    
+                <h3>Filtros</h3>    
                 <hr>
                 <?php
                     $facets = new facets();
