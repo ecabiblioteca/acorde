@@ -73,7 +73,14 @@ if (isset($testIndex) && $testIndex == false) {
                     ]
                 ],                                                       
                 'datePublished' => [
-                    'type' => 'text'
+                    'type' => 'text',
+                    'analyzer' => 'portuguese',
+                    'fields' => [
+                        'keyword' => [
+                            'type' => 'keyword',
+                            'ignore_above' => 256
+                        ]
+                    ]
                 ]                                         
             ]
         ]
