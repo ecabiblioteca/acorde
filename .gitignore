@@ -6,5 +6,6 @@ composer.lock
 composer.phar
 vendor/
 upload/
+tools/data
 convert-img/
 google23ba839ff7c5e6f4.html
