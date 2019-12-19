@@ -19,9 +19,9 @@ while ($record = fgets(STDIN)) {
         if ($value == "280") {
             $rowNum["title"] = $key;            
         }
-    //     if ($value == "Authors") {
-    //         $rowNum["Authors"] = $key;
-    //     }        
+        if ($value == "020") {
+            $rowNum["Authors"] = $key;
+        }        
     //     if ($value == "Source") {
     //         $rowNum["sourceTitle"] = $key;
     //     }
@@ -173,20 +173,12 @@ class Record
         // $doc["doc"]["palavras_chave"] = array_merge($palavras_chave_authors, $palavras_chave_scopus);
 
         // Autores
-        // $authorsArray = explode(";", $row[$rowNum["Authors"]]);
-        // $i_autAff=0;
-        // foreach ($authorsArray as $autAff) {
-        //     $doc["doc"]["author"][$i_autAff]["person"]["name"] = $autAff;
-        //     $i_autAff++;
-        // }
-        // $doc["doc"]["numOfAuthors"] = count($doc["doc"]["author"]);
-        // $autores_nome_array = explode(",", $row[0]);
-        // $autores_afiliacao_array = explode(";", $row[$rowNum["Affiliations"]]);
-        // for ($i=0;$i<count($autores_nome_array);$i++) {
-        //     $doc["doc"]["autores"][$i]["nomeCompletoDoAutor"] = $autores_nome_array[$i];
-        //     $doc["doc"]["autores"][$i]["nomeAfiliacao"] = $autores_afiliacao_array[$i];
-        // }                
-
+        $authorsArray = explode("|", $row[$rowNum["Authors"]]);
+        $i_aut=0;
+        foreach ($authorsArray as $author) {
+            $doc["doc"]["author"][$i_aut]["person"]["name"] = $author;
+            $i_aut++;
+        }
         $doc["doc_as_upsert"] = true;
         return $doc;
 
