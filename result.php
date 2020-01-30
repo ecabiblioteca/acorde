@@ -142,7 +142,11 @@ $get_data = $_GET;
 
 
                                         <?php if (!empty($r["_source"]["publisher"]["organization"]["name"])) : ?>
-                                            <p class="text-muted"><b>Casa publicadora:</b> <a href="result.php?search[]=publisher.organization.name:&quot;<?php echo $r["_source"]["publisher"]["organization"]["name"];?>&quot;"><?php echo $r["_source"]["publisher"]["organization"]["name"];?></a></p>
+                                            <?php if ($r["_source"]["type"] == "Gravação" || $r["_source"]["type"] == "Disco") : ?>
+                                        <p class="text-muted"><b>Gravadora:</b> <a href="result.php?search[]=publisher.organization.name:&quot;<?php echo $r["_source"]["publisher"]["organization"]["name"][0];?>&quot;"><?php echo implode(";", $r["_source"]["publisher"]["organization"]["name"]) ;?></a></p>
+                                            <?php else : ?>
+                                                <p class="text-muted"><b>Casa publicadora:</b> <a href="result.php?search[]=publisher.organization.name:&quot;<?php echo $r["_source"]["publisher"]["organization"]["name"];?>&quot;"><?php echo $r["_source"]["publisher"]["organization"]["name"];?></a></p>
+                                            <?php endif; ?>
                                         <?php endif; ?>
                                         <?php if (!empty($r["_source"]["publisher"]["organization"]["location"])) : ?>
                                             <p class="text-muted"><b>Local:</b> <a href="result.php?search[]=publisher.organization.location:&quot;<?php echo $r["_source"]["publisher"]["organization"]["location"];?>&quot;"><?php echo $r["_source"]["publisher"]["organization"]["location"];?></a></p>
@@ -181,7 +185,7 @@ $get_data = $_GET;
                         $_GET = null;                                    
                     }
                     
-
+                    $facets->facet("type", 120, "Tipo", null, "_term", $_GET);
                     $facets->facet("author.person.name", 120, "Compositores", null, "_term", $_GET);
                     $facets->facet("author.person.USP.autor_funcao", 120, "Autor/Função", null, "_term", $_GET);
                     $facets->facet("USP.meio_de_expressao", 200, "Meio de expressão", null, "_term", $_GET);
